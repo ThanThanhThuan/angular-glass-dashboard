@@ -1,0 +1,41 @@
+name: Build and Deploy Angular
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 1. Inject Secrets into environment.ts before build
+      - name: Inject Secrets
+        run: |
+          sed -i "s|VITE_TABLE_NAME_PLACEHOLDER|${{ secrets.VITE_TABLE_NAME }}|g" src/environments/environment.ts
+          sed -i "s|VITE_INSTANCE_ID_PLACEHOLDER|${{ secrets.VITE_INSTANCE_ID }}|g" src/environments/environment.ts
+          sed -i "s|VITE_API_TOKEN_PLACEHOLDER|${{ secrets.VITE_API_TOKEN }}|g" src/environments/environment.ts
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      # 2. Build for production with correct base-href
+      # Replace 'angular-glass-dashboard' with your Repository Name
+      - name: Build
+        run: npx ng build --configuration production --base-href /angular-glass-dashboard/
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          # IMPORTANT: Must include the '/browser' at the end
+          folder: dist/angular-glass-dashboard/browser 
+          branch: gh-pages

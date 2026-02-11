@@ -1,0 +1,6 @@
+export const environment = {
+    production: true,
+    TABLE_NAME: 'VITE_TABLE_NAME_PLACEHOLDER',
+    INSTANCE_ID: 'VITE_INSTANCE_ID_PLACEHOLDER',
+    API_TOKEN: 'VITE_API_TOKEN_PLACEHOLDER'
+};
